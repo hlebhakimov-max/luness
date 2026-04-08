@@ -1,0 +1,37 @@
+body {
+    background-color: #121212; /* Темный фон */
+    color: white;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.player-card {
+    background-color: #181818;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    width: 300px;
+}
+
+.cover {
+    font-size: 80px;
+    background: #282828;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+audio {
+    width: 100%;
+    margin-top: 20px;
+    filter: invert(100%); /* Делает стандартный плеер светлым на темном фоне */
+}
+
+.player-card {
+    margin-bottom: 20px; /* Расстояние между плеерами */
+}

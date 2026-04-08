@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Clone — Python</title>
+    <style>
+        /* Основные настройки страницы */
+        body {
+            background-color: #121212; /* Фирменный темный цвет */
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 800px;
+            text-align: left;
+        }
+
+        /* Контейнер для списка песен */
+        .playlist-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Заголовок таблицы (необязательно, для стиля) */
+        .playlist-header {
+            display: flex;
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #b3b3b3;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        /* Сама строка с песней */
+        .player-card {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        /* Эффект при наведении */
+        .player-card:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        /* Когда песня играет */
+        .player-card.active {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        /* Номер песни */
+        .track-number {
+            width: 30px;
+            color: #b3b3b3;
+            font-size: 16px;
+        }
+
+        /* Маленький диск */
+        .cover-art {
+            width: 40px;
+            height: 40px;
+            background-color: #282828;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 15px;
+            font-size: 20px;
+            border: 1px solid #333;
+        }
+
+        /* Текст с названием */
+        .track-info {
+            flex-grow: 1; /* Занимает всё место в центре */
+        }
+
+        .track-info h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* Подсветка названия у активной песни */
+        .active .track-info h3 {
+            color: #1db954; /* Зеленый цвет Spotify */
+        }
+
+        /* Стилизация плеера */
+        audio {
+            height: 32px;
+            width: 250px;
+            filter: invert(100%) hue-rotate(180deg) brightness(1.2);
+            opacity: 0.6;
+        }
+
+        audio:hover {
+            opacity: 1;
+        }
+
+        /* Анимация вращения */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .active .cover-art {
+            animation: spin 4s linear infinite;
+            border-color: #1db954;
+            color: #1db954;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Мой Плейлист</h1>
+
+    <div class="playlist-container">
+        <!-- Заголовки столбцов -->
+        <div class="playlist-header">
+            <span style="width: 30px;">#</span>
+            <span style="margin-left: 55px;">Название</span>
+            <span style="margin-left: auto; padding-right: 100px;">Плеер</span>
+        </div>
+
+        <!-- Цикл вывода песен -->
+        {% for song in playlist %}
+        <div class="player-card">
+            <!-- Номер (loop.index — это встроенная переменная Flask для порядкового номера) -->
+            <div class="track-number">{{ loop.index }}</div>
+            
+            <div class="cover-art">💿</div>
+            
+            <div class="track-info">
+                <h3>{{ song.name }}</h3>
+            </div>
+
+            <audio controls class="music-player">
+                <source src="{{ url_for('static', filename=song.file) }}" type="audio/mpeg">
+            </audio>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        const players = document.querySelectorAll('.music-player');
+
+        players.forEach((player, index) => {
+            
+            // Когда нажимаем Play
+            player.onplay = () => {
+                // Снимаем активность со всех строк
+                document.querySelectorAll('.player-card').forEach(card => card.classList.remove('active'));
+                // Добавляем текущей строке
+                player.closest('.player-card').classList.add('active');
+                
+                // Останавливаем другие плееры
+                players.forEach(p => {
+                    if (p !== player) p.pause();
+                });
+            };
+
+            // Автопереключение на следующую
+            player.onended = function() {
+                const nextPlayer = players[index + 1];
+                if (nextPlayer) {
+                    nextPlayer.play();
+                }
+            };
+        });
+    </script>
+
+</body>
+</html>
