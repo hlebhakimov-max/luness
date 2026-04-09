@@ -1,37 +1,44 @@
 body {
-    background-color: #121212; /* Темный фон */
-    color: white;
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
 }
 
-.player-card {
-    background-color: #181818;
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    width: 300px;
-}
-
-.cover {
-    font-size: 80px;
-    background: #282828;
-    border-radius: 10px;
-    margin-bottom: 20px;
+.track-card {
+    background: #181818;
     padding: 20px;
+    border-radius: 12px;
+    transition: background 0.3s ease;
+    border: 1px solid #282828;
 }
 
-audio {
+.track-card:hover {
+    background: #282828;
+    border-color: #1DB954; /* Фирменный зеленый цвет */
+}
+
+input {
+    background-color: #242424;
+    color: white;
+    border: 1px solid transparent;
+    padding: 12px 25px;
+    border-radius: 500px; /* Овальное поле как в Spotify */
+    width: 350px;
+}
+
+button {
+    background-color: #1DB954;
+    border-radius: 500px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 10 карточек распределятся по рядам */
+    gap: 20px;
     width: 100%;
-    margin-top: 20px;
-    filter: invert(100%); /* Делает стандартный плеер светлым на темном фоне */
-}
-
-.player-card {
-    margin-bottom: 20px; /* Расстояние между плеерами */
+    max-width: 1400px;
+    margin-top: 30px;
 }
