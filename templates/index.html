@@ -3,188 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Clone — Python</title>
+    <title>VibeFlow — Музыкальный плеер</title>
     <style>
-        /* Основные настройки страницы */
+        :root {
+            --bg-black: #000000;
+            --bg-dark: #121212;
+            --card-color: #181818;
+            --hover-color: #282828;
+            --accent-color: #1DB954;
+            --text-main: #ffffff;
+            --text-secondary: #b3b3b3;
+            --sidebar-width: 240px;
+        }
+
         body {
-            background-color: #121212; /* Фирменный темный цвет */
-            color: #ffffff;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-main);
             margin: 0;
-            padding: 40px 20px;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Боковая панель */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-black);
             display: flex;
             flex-direction: column;
+            padding: 20px 10px;
+            gap: 20px;
+        }
+
+        .sidebar-nav, .sidebar-library {
+            background-color: var(--bg-dark);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .nav-item {
+            display: flex;
             align-items: center;
+            gap: 15px;
+            padding: 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
         }
 
-        h1 {
-            font-size: 32px;
-            margin-bottom: 30px;
-            width: 100%;
-            max-width: 800px;
-            text-align: left;
-        }
+        .nav-item:hover { color: white; }
 
-        /* Контейнер для списка песен */
-        .playlist-container {
-            width: 100%;
-            max-width: 800px;
+        .logo { font-size: 1.5rem; color: var(--accent-color); font-weight: bold; margin-bottom: 10px; display: block; text-decoration: none; }
+
+        /* Основной контент */
+        .main-content {
+            flex: 1;
+            background: linear-gradient(to bottom, #222, var(--bg-dark));
+            overflow-y: auto;
+            border-radius: 8px;
+            margin: 8px 8px 8px 0;
             display: flex;
             flex-direction: column;
         }
 
-        /* Заголовок таблицы (необязательно, для стиля) */
-        .playlist-header {
-            display: flex;
-            padding: 10px 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            color: #b3b3b3;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
+        header {
+            padding: 20px 40px;
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        /* Сама строка с песней */
-        .player-card {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            border-radius: 6px;
-            transition: background-color 0.2s ease;
+        .search-container form { display: flex; gap: 10px; }
+
+        .search-container input {
+            background-color: #242424;
+            border: 1px solid transparent;
+            padding: 12px 20px;
+            border-radius: 50px;
+            color: white;
+            width: 300px;
+            outline: none;
+        }
+
+        .search-container input:focus { border-color: white; }
+
+        .search-container button {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        /* Эффект при наведении */
-        .player-card:hover {
-            background-color: rgba(255,255,255,0.1);
+        /* Сетка песен */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 40px;
         }
 
-        /* Когда песня играет */
-        .player-card.active {
-            background-color: rgba(255,255,255,0.05);
+        .card {
+            background-color: var(--card-color);
+            padding: 15px;
+            border-radius: 8px;
+            transition: 0.3s;
+            text-align: left;
         }
 
-        /* Номер песни */
-        .track-number {
-            width: 30px;
-            color: #b3b3b3;
-            font-size: 16px;
+        .card:hover { background-color: var(--hover-color); }
+
+        .card img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 10px;
         }
 
-        /* Маленький диск */
-        .cover-art {
-            width: 40px;
-            height: 40px;
-            background-color: #282828;
-            border-radius: 4px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 15px;
-            font-size: 20px;
-            border: 1px solid #333;
-        }
+        .track-title { font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artist-name { color: var(--text-secondary); font-size: 0.85rem; margin: 5px 0 12px; }
 
-        /* Текст с названием */
-        .track-info {
-            flex-grow: 1; /* Занимает всё место в центре */
-        }
-
-        .track-info h3 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: 400;
-        }
-
-        /* Подсветка названия у активной песни */
-        .active .track-info h3 {
-            color: #1db954; /* Зеленый цвет Spotify */
-        }
-
-        /* Стилизация плеера */
         audio {
-            height: 32px;
-            width: 250px;
-            filter: invert(100%) hue-rotate(180deg) brightness(1.2);
-            opacity: 0.6;
+            width: 100%;
+            height: 30px;
+            filter: invert(1);
         }
 
-        audio:hover {
-            opacity: 1;
-        }
-
-        /* Анимация вращения */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .active .cover-art {
-            animation: spin 4s linear infinite;
-            border-color: #1db954;
-            color: #1db954;
-        }
+        .status-msg { text-align: center; padding: 50px; color: var(--text-secondary); }
     </style>
 </head>
 <body>
 
-    <h1>Мой Плейлист</h1>
-
-    <div class="playlist-container">
-        <!-- Заголовки столбцов -->
-        <div class="playlist-header">
-            <span style="width: 30px;">#</span>
-            <span style="margin-left: 55px;">Название</span>
-            <span style="margin-left: auto; padding-right: 100px;">Плеер</span>
+    <div class="sidebar">
+        <a href="/" class="logo">VibeFlow</a>
+        <div class="sidebar-nav">
+            <a href="/" class="nav-item">🏠 Главная</a>
         </div>
-
-        <!-- Цикл вывода песен -->
-        {% for song in playlist %}
-        <div class="player-card">
-            <!-- Номер (loop.index — это встроенная переменная Flask для порядкового номера) -->
-            <div class="track-number">{{ loop.index }}</div>
-            
-            <div class="cover-art">💿</div>
-            
-            <div class="track-info">
-                <h3>{{ song.name }}</h3>
-            </div>
-
-            <audio controls class="music-player">
-                <source src="{{ url_for('static', filename=song.file) }}" type="audio/mpeg">
-            </audio>
+        <div class="sidebar-library">
+            <p style="margin-left: 10px; font-weight: bold; font-size: 0.9rem;">БЫСТРЫЙ ПОИСК</p>
+            <a href="/?search=Top+Hits" class="nav-item">🔥 Топ хиты</a>
+            <a href="/?search=Phonk" class="nav-item">🚗 Фонк</a>
+            <a href="/?search=Lo-fi" class="nav-item">☕️ Релакс</a>
         </div>
-        {% endfor %}
     </div>
 
-    <script>
-        const players = document.querySelectorAll('.music-player');
+    <div class="main-content">
+        <header>
+            <div class="search-container">
+                <form action="/" method="get">
+                    <!-- Атрибут name="search" должен совпадать с тем, что в app.py -->
+                    <input type="text" name="search" placeholder="Поиск артиста или трека..." value="{{ query }}">
+                    <button type="submit">Найти</button>
+                </form>
+            </div>
+        </header>
 
-        players.forEach((player, index) => {
-            
-            // Когда нажимаем Play
-            player.onplay = () => {
-                // Снимаем активность со всех строк
-                document.querySelectorAll('.player-card').forEach(card => card.classList.remove('active'));
-                // Добавляем текущей строке
-                player.closest('.player-card').classList.add('active');
-                
-                // Останавливаем другие плееры
-                players.forEach(p => {
-                    if (p !== player) p.pause();
-                });
-            };
-
-            // Автопереключение на следующую
-            player.onended = function() {
-                const nextPlayer = players[index + 1];
-                if (nextPlayer) {
-                    nextPlayer.play();
-                }
-            };
-        });
-    </script>
+        <div class="grid">
+            {% if tracks %}
+                {% for track in tracks %}
+                <div class="card">
+                    <img src="{{ track.album.cover_medium }}" alt="Обложка">
+                    <p class="track-title">{{ track.title }}</p>
+                    <p class="artist-name">{{ track.artist.name }}</p>
+                    <audio controls>
+                        <source src="{{ track.preview }}" type="audio/mpeg">
+                    </audio>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="status-msg">
+                    <h3>Ничего не нашли по запросу "{{ query }}"</h3>
+                    <p>Попробуйте ввести название группы или песни еще раз.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
 </body>
 </html>
