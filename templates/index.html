@@ -2,76 +2,174 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>VibeFlow — Music</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis Music - Ultra Compact</title>
+    <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root { --bg: #090909; --accent: #1DB954; --text: #fff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; }
-        .sidebar { width: 240px; background: #000; padding: 20px; border-right: 1px solid #333; }
-        .main { flex: 1; overflow-y: auto; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: #181818; padding: 15px; border-radius: 10px; text-align: center; }
-        iframe { border-radius: 12px; width: 100%; height: 80px; border: none; }
-        .search-box { margin-bottom: 20px; }
-        input { padding: 10px; border-radius: 20px; border: none; width: 250px; }
-        button { padding: 10px 20px; border-radius: 20px; border: none; background: var(--accent); cursor: pointer; font-weight: bold; }
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Узкая боковая панель */
+        .sidebar {
+            width: 160px;
+            background-color: #000000;
+            padding: 15px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-right: 1px solid #282828;
+        }
+
+        .sidebar h2 { color: #1DB954; font-size: 18px; margin-bottom: 15px; text-align: center; }
+
+        .menu-item {
+            color: #b3b3b3;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: #ffffff;
+            background-color: #1e1e1e;
+        }
+
+        /* Основная область */
+        .main-content {
+            flex: 1;
+            background: linear-gradient(to bottom, #181818, #121212);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .search-area {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        input {
+            background-color: #242424;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 250px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        button#search-btn {
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        /* Ультра-сетка: 6 карточек в ряд */
+        #results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            width: 100%;
+        }
+
+        .track-card {
+            background: #181818;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #232323;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .track-card:hover { background: #282828; }
+
+        .track-card img {
+            width: 100%;
+            border-radius: 4px;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+
+        .fav-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .track-info h3 {
+            font-size: 12px;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-info p {
+            color: #b3b3b3;
+            font-size: 10px;
+            margin: 4px 0 8px 0;
+        }
+
+        audio { 
+            width: 100%; 
+            height: 20px; 
+            filter: invert(100%); 
+        }
+
+        h1#page-title { font-size: 18px; margin: 0 0 15px 0; }
     </style>
 </head>
 <body>
+
     <div class="sidebar">
-        <h2 style="color: var(--accent)">VibeFlow</h2>
-        <p>К сожалению, ваш провайдер блокирует поиск, но Джарвис нашел выход!</p>
-        <hr>
-        <h3>Топ Радио:</h3>
-        <div onclick="loadRadio(1)" style="cursor:pointer; margin-bottom:10px;">📻 Record Phonk</div>
-        <div onclick="loadRadio(2)" style="cursor:pointer; margin-bottom:10px;">📻 Deep House</div>
+        <h2>JARVIS</h2>
+        <div class="menu-item active" id="menu-search">🔍 Поиск</div>
+        <div class="menu-item" id="menu-favorites">💚 Избранное</div>
     </div>
-    <div class="main">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Поиск (может блокироваться)...">
-            <button onclick="searchMusic()">Поиск</button>
+
+    <div class="main-content">
+        <div id="search-section">
+            <div class="search-area">
+                <input type="text" id="search-input" placeholder="Поиск...">
+                <button id="search-btn">Найти</button>
+            </div>
         </div>
-        <div id="results" class="grid">
-            <!-- Плейлист по умолчанию -->
-            <div class="card">
-                <h3>The Weeknd - Blinding Lights</h3>
-                <iframe src="https://deezer.com"></iframe>
-            </div>
-            <div class="card">
-                <h3>Linkin Park - Numb</h3>
-                <iframe src="https://deezer.com"></iframe>
-            </div>
-            <div class="card">
-                <h3>Nirvana - Teen Spirit</h3>
-                <iframe src="https://deezer.com"></iframe>
-            </div>
+
+        <h1 id="page-title">Главная</h1>
+
+        <div id="results">
+            <!-- Здесь будут мини-карточки -->
         </div>
     </div>
 
-    <script>
-        async function searchMusic() {
-            const query = document.getElementById('searchInput').value;
-            const grid = document.getElementById('results');
-            grid.innerHTML = '<p>Пробуем найти...</p>';
-            
-            // Пробуем через резервный прокси
-            try {
-                const res = await fetch(`https://allorigins.win{encodeURIComponent('https://deezer.com)}`);
-                const json = await res.json();
-                const data = JSON.parse(json.contents);
-                grid.innerHTML = '';
-                data.data.forEach(t => {
-                    grid.innerHTML += `<div class="card"><h3>${t.title}</h3><iframe src="https://deezer.com{t.id}"></iframe></div>`;
-                });
-            } catch (e) {
-                grid.innerHTML = '<p>Поиск всё еще заблокирован провайдером. Слушайте наши хиты!</p>';
-            }
-        }
-
-        function loadRadio(type) {
-            const grid = document.getElementById('results');
-            if(type === 1) grid.innerHTML = '<h3>Record Phonk</h3><audio controls autoplay src="https://regru.ru"></audio>';
-            if(type === 2) grid.innerHTML = '<h3>Deep House</h3><audio controls autoplay src="https://regru.ru"></audio>';
-        }
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
